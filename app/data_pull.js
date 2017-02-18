@@ -13,41 +13,49 @@ var quandl = new Quandl({
 var pullData = function(stocks,shares){
 	finalarray = {id:[{}]};
 	for(var j= 0; j<(stocks).length; j++){
+		console.log(j)
 		var quantity = shares[j]
 		console.log(quantity)
 		console.log(stocks[j])
-		quandl.dataset({
-		source: "WIKI",
-		table: stocks[j],
-		}, {
-		order: "asc",
-		exclude_column_names: false,
-		// Notice the YYYY-MM-DD format
-		  start_date: "2010-01-01",
-		  end_date: "2017-02-12",
-		  column_index: 4
-		}, function(err, response){
-		    if(err)
-		        throw err;
-		    output = JSON.parse(response);
-		    adjustedarray = {id:[{}]};
-		    for(var i=0; i<(output.dataset.data).length; i++){
-		    	adjustedarray.id = i;
-		    	adjustedarray[i] = {date: output.dataset.data[i][0], value: output.dataset.data[i][1]*quantity}
-		    	if(j==0){
-		    		finalarray.id = i;
-		    		finalarray[i] = {date: output.dataset.data[i][0], value: output.dataset.data[i][1]*quantity}
-		    	}
-		    	else{
-		    		// finalarray[i]['value']+=adjustedarray.value;
-		    	}
-		    }
-		    // console.log(adjustedarray)
-		});
+		setTimeout(testFunct(stocks[j], quantity,j,finalarray), 500)
+		// console.log(j)
 	}
 	// console.log(finalarray);
 }
 
+var testFunct = function(stock, quantity,j,finalarray){
+	quandl.dataset({
+	source: "WIKI",
+	table: stock,
+	}, {
+	order: "desc",
+	exclude_column_names: false,
+	// Notice the YYYY-MM-DD format
+	  start_date: "2010-01-01",
+	  end_date: "2017-02-12",
+	  column_index: 4
+	}, function(err, response){
+	    if(err)
+	        throw err;
+	    // console.log(response)
+	    var output = JSON.parse(response);
+	    adjustedarray = {id:[{}]};
+	    for(var i=0; i<(output.dataset.data).length; i++){
+	    	adjustedarray.id = i;
+	    	adjustedarray[i] = {date: output.dataset.data[i][0], value: output.dataset.data[i][1]*quantity}
+	    	if(j==0){
+	    		finalarray.id = i;
+	    		finalarray[i] = {date: output.dataset.data[i][0], value: output.dataset.data[i][1]*quantity}
+	    	}
+	    	// else{
+	    		// var temp = finalarray[i]['value']
 
+	    		// finalarray[i]['value']+=adjustedarray.value;
+	    	// }
+	    }
+	    // console.log(adjustedarray)
+	    console.log(j)
+	});
+}
 
 module.exports = pullData;
